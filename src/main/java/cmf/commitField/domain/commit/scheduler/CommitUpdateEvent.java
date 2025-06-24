@@ -13,4 +13,14 @@ public class CommitUpdateEvent extends ApplicationEvent {
         this.username = username;
         this.newCommitCount = newCommitCount;
     }
+
+    // 🔄 기존 이벤트는 유지하되, 점진적으로 Kafka로 전환 중임을 표시
+    @Override
+    public String toString() {
+        return "CommitUpdateEvent{" +
+                "username='" + username + '\'' +
+                ", newCommitCount=" + newCommitCount +
+                ", status='MIGRATING_TO_KAFKA'" +
+                '}';
+    }
 }

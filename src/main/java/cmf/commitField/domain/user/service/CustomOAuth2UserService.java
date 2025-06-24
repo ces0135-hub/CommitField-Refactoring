@@ -2,7 +2,7 @@ package cmf.commitField.domain.user.service;
 
 import cmf.commitField.domain.commit.scheduler.CommitCacheService;
 import cmf.commitField.domain.commit.totalCommit.service.TotalCommitService;
-import cmf.commitField.domain.noti.noti.service.NotiService;
+import cmf.commitField.domain.noti.noti.service.GeneralNotiService;
 import cmf.commitField.domain.pet.entity.Pet;
 import cmf.commitField.domain.pet.repository.PetRepository;
 import cmf.commitField.domain.season.entity.Season;
@@ -39,7 +39,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
     private final HttpServletRequest request;  // HttpServletRequest를 주입 받음.
     private final CommitCacheService commitCacheService;
     private final TotalCommitService totalCommitService;
-    private final NotiService notiService;
+    private final GeneralNotiService generalNotiService;
     private final SeasonService seasonService;
     private final StringRedisTemplate redisTemplate;
 
@@ -115,10 +115,10 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         String season_key = "season_active:" + user.getUsername();
         Season season = seasonService.getActiveSeason();
         log.info("Active season: {}", season);
-        if(notiService.getSeasonNotiCheck(user, season.getId()).isEmpty()){
+        if(generalNotiService.getSeasonNotiCheck(user, season.getId()).isEmpty()){
             log.info("User {} does not have season noti", user.getUsername());
             // 가지고 있지 않다면 알림을 추가
-            notiService.createNewSeasonNoti(season, user);
+            generalNotiService.createNewSeasonNoti(season, user);
 //            redisTemplate.opsForValue().set(season_key, String.valueOf(count), Duration.ofHours(3)); // 3시간 캐싱
         }
 

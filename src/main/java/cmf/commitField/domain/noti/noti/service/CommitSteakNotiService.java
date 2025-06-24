@@ -2,23 +2,16 @@ package cmf.commitField.domain.noti.noti.service;
 
 import cmf.commitField.domain.commit.totalCommit.service.TotalCommitService;
 import cmf.commitField.domain.noti.noti.entity.NotiDetailType;
-import cmf.commitField.domain.noti.noti.entity.NotiType;
 import cmf.commitField.domain.noti.noti.repository.NotiRepository;
 import cmf.commitField.domain.user.entity.User;
 import cmf.commitField.domain.user.repository.UserRepository;
-import cmf.commitField.domain.user.service.UserService;
-import cmf.commitField.global.error.ErrorCode;
-import cmf.commitField.global.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -27,7 +20,7 @@ import java.util.List;
 public class CommitSteakNotiService {
     private final UserRepository userRepository;
     private final TotalCommitService totalCommitService;
-    private final NotiService notiService;
+    private final GeneralNotiService generalNotiService;
     private final NotiRepository notiRepository;
 
     // 매일 10시 실행
@@ -56,7 +49,7 @@ public class CommitSteakNotiService {
 
         if (shouldNotify(currentStreakCommit) && !alreadyNotified) {
             log.info("🔍 연속 커밋 축하 알림 User: {}, Streak: {}", user.getUsername(), currentStreakCommit);
-            notiService.createStreakCommitNoti(user, String.valueOf(currentStreakCommit));
+            generalNotiService.createStreakCommitNoti(user, String.valueOf(currentStreakCommit));
         }
     }
 

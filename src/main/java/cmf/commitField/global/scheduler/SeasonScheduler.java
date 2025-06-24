@@ -1,7 +1,7 @@
 // java/cmf/commitField/global/scheduler/SeasonScheduler.java
 package cmf.commitField.global.scheduler;
 
-import cmf.commitField.domain.noti.noti.service.NotiService;
+import cmf.commitField.domain.noti.noti.service.GeneralNotiService;
 import cmf.commitField.domain.season.entity.Rank;
 import cmf.commitField.domain.season.entity.Season;
 import cmf.commitField.domain.season.entity.SeasonStatus;
@@ -30,7 +30,7 @@ public class SeasonScheduler {
     private final UserSeasonRepository userSeasonRepository;
     private final UserRepository userRepository;
     private final SeasonService seasonService;
-    private final NotiService notiService;
+    private final GeneralNotiService generalNotiService;
 
 //     매년 3, 6, 9, 12월 1일 자정마다 시즌 확인 및 생성
     @Scheduled(cron = "0 0 0 1 3,6,9,12 *")
@@ -57,7 +57,7 @@ public class SeasonScheduler {
 
             // 모든 유저에게 새 시즌 알림 생성
             userRepository.findAll().forEach(user -> {
-                notiService.createNewSeasonNoti(newSeason, user);
+                generalNotiService.createNewSeasonNoti(newSeason, user);
             });
 
             // 모든 유저의 랭크 초기화

@@ -20,7 +20,7 @@ import java.util.List;
 @Slf4j
 public class CommitAbsenceNotiService {
     private final UserRepository userRepository;
-    private final NotiService notiService;
+    private final GeneralNotiService generalNotiService;
     private final NotiRepository notiRepository;
 
     // 매일 10시 실행
@@ -36,7 +36,7 @@ public class CommitAbsenceNotiService {
 
         for (User user : inactiveUsers) {
             if (!hasRecentAbsenceNoti(user)) { // 최근 알림이 없는 경우에만 생성
-                notiService.createStreakBrokenNoti(user);
+                generalNotiService.createStreakBrokenNoti(user);
                 log.info("커밋 부재 알림 전송: {}", user.getUsername());
             }
         }
