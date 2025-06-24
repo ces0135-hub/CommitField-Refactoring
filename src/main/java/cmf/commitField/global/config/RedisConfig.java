@@ -22,7 +22,7 @@ public class RedisConfig {
     @Value("${spring.redis.port}")
     public int port;
 
-    @Value("${spring.redis.password}")
+    @Value("${spring.redis.password:}")  // 기본값을 빈 문자열로 설정
     public String password;
 
     @Bean
@@ -30,17 +30,22 @@ public class RedisConfig {
         Config config = new Config();
         String redisAddress = "redis://" + host + ":" + port;
         config.useSingleServer()
-                .setAddress(redisAddress)
-                .setPassword(password); // 비밀번호 추가
+                .setAddress(redisAddress);
+
+        // 비밀번호가 있을 때만 설정
+        if (password != null && !password.isEmpty()) {
+            config.useSingleServer().setPassword(password);
+        }
+
         return Redisson.create(config);
     }
 
     @Bean
     public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory connectionFactory) {
         RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();
-        redisTemplate.setKeySerializer(new StringRedisSerializer()); // Redis 키를 문자열로 직렬화
-        redisTemplate.setValueSerializer(new GenericJackson2JsonRedisSerializer()); // 값의 직렬화를 위해 -> Redis (JSON)
-        redisTemplate.setConnectionFactory(connectionFactory); // 연결 다 된 Redis -> Factory와 연결
+        redisTemplate.setKeySerializer(new StringRedisSerializer());
+        redisTemplate.setValueSerializer(new GenericJackson2JsonRedisSerializer());
+        redisTemplate.setConnectionFactory(connectionFactory);
         return redisTemplate;
     }
 
@@ -49,7 +54,12 @@ public class RedisConfig {
         RedisStandaloneConfiguration configuration = new RedisStandaloneConfiguration();
         configuration.setHostName(host);
         configuration.setPort(port);
-        configuration.setPassword(password);  // 비밀번호 설정
+
+        // 비밀번호가 있을 때만 설정
+        if (password != null && !password.isEmpty()) {
+            configuration.setPassword(password);
+        }
+
         return new LettuceConnectionFactory(configuration);
     }
 
@@ -59,5 +69,4 @@ public class RedisConfig {
         template.setConnectionFactory(redisConnectionFactory);
         return template;
     }
-
 }

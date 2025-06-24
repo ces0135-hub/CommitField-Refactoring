@@ -1,74 +1,66 @@
 server:
   port: 8090
-  timezone: Asia/Seoul
+
 spring:
-  config:
-    import: application-secret.yml
-  output:
-    ansi:
-      enabled: ALWAYS
-  profiles:
-    active: dev
-    include: secret
   datasource:
     url: jdbc:mysql://localhost:3306/cmf_db?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Seoul
     username: root
-    password: root123414
+    password: 1234
     driver-class-name: com.mysql.cj.jdbc.Driver
+
+  redis:
+    host: localhost
+    port: 6381
+    password: ""  # 빈 문자열로 설정 (비밀번호 없음)
+
+    # Kafka 설정
+    kafka:
+      bootstrap-servers: localhost:9092
+      producer:
+        key-serializer: org.apache.kafka.common.serialization.StringSerializer
+        value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+        properties:
+          spring.json.add.type.headers: false
+          spring.json.trusted.packages: "cmf.commitField.*"
+      consumer:
+        group-id: commitfield-notifications
+        key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+        value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+        properties:
+          spring.json.trusted.packages: "cmf.commitField.*"
+          spring.json.value.default.type: "cmf.commitField.global.kafka.message.NotificationMessage"
+        auto-offset-reset: latest
+        enable-auto-commit: false
+
   jpa:
-    open-in-view: false
     hibernate:
       ddl-auto: update
     properties:
       hibernate:
-        default_batch_fetch_size: 100
         format_sql: true
-        highlight: true
-        use_sql_comments: true
-    websocket:
-      enabled: true
-  custom:
-    dev:
-      cookieDomain: localhost
-      frontUrl: "http://${custom.dev.cookieDomain}:5173"
-      backUrl: "http://${custom.dev.cookieDomain}:${server.port}"
-    prod:
-      cookieDomain: cmf.seoez.site
-      frontUrl: "https://www.${custom.prod.cookieDomain}/"
-      backUrl: "https://api.${custom.prod.cookieDomain}/"
-    site:
-      name: "commit-field"
-      cookieDomain: "${custom.dev.cookieDomain}"
-      frontUrl: "${custom.dev.frontUrl}"
-      backUrl: "${custom.dev.backUrl}"
-    # Lettuce 클라이언트 설정 (Redis 연결을 관리하는 클라이언트)
-  redis:
-    host: localhost  # Redis 서버의 호스트명 (Docker를 사용할 경우 `localhost` 또는 `host.docker.internal` 사용)
-    port: 6379  # Redis 서버 포트
 
-  lettuce:
-    pool:
-      max-active: 10  # 최대 활성 커넥션 수
-      max-wait: -1  # 커넥션 풀에서 대기할 수 있는 최대 시간 (-1은 무제한 대기)
-      max-idle: 8  # 커넥션 풀에서의 최대 유휴 커넥션 수
-      min-idle: 4  # 커넥션 풀에서의 최소 유휴 커넥션 수
+  security:
+    oauth2:
+      client:
+        registration:
+          github:
+            client-id: "temp-client-id"
+            client-secret: "temp-client-secret"
+            scope:
+              - user:email
+              - read:user
 
-# swagger 설정
+aws:
+  access-key-id: "dummy-key"
+  secret-access-key: "dummy-secret"
+
+github:
+  token: "dummy-token"
+
 springdoc:
   swagger-ui:
-    path: /api-test  # swagger-ui 접근 경로에 대한 별칭, 해당 주소로 접속해도 http://localhost:8080/swagger-ui/index.html로 리다이렉션 됨.
-    groups-order: DESC # path, query, body, response 순으로 출력
-    tags-sorter: alpha # 태그를 알파벳 순으로 정렬
-    operations-sorter: method  # delete - get - patch - post - put 순으로 정렬, alpha를 사용하면 알파벳 순으로 정렬 가능
-
-#  paths-to-match:
-#    - /api/** # swagger-ui에 표시할 api의 엔드포인트 패턴
-
+    path: /api-test
 
 logging:
   level:
-    com.commit-field.commitField: DEBUG
     org.hibernate.SQL: DEBUG
-    org.hibernate.orm.jdbc.bind: TRACE
-    org.hibernate.orm.jdbc.extract: TRACE
-    org.springframework.transaction.interceptor: TRACE

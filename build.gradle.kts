@@ -79,6 +79,15 @@ dependencies {
 
 	implementation("org.springframework.boot:spring-boot-starter-actuator")
 
+	// Kafka 관련 의존성 추가
+	implementation("org.springframework.kafka:spring-kafka")
+	implementation("org.apache.kafka:kafka-streams")
+	testImplementation("org.springframework.kafka:spring-kafka-test")
+
+	// JSON 직렬화를 위한 Jackson 의존성 (이미 있지만 명시)
+	implementation("com.fasterxml.jackson.core:jackson-databind")
+	implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
+
 }
 
 tasks.withType<Test> {
